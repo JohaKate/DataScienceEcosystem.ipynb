@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard Ejecutivo - Hotel Costa Bella</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    /* Dashboard Styles */
+    .dashboard-body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    .dashboard-header-main {
+      background: rgba(255, 255, 255, 0.95);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      padding: 8px 12px; /* más reducido */
+      margin: 5px 20px 10px 20px; /* margen superior muy pequeño */
+      border-radius: 15px; /* radio más pequeño */
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.1); /* sombra más sutil */
+      text-align: center;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .dashboard-header-main h1 {
+      color: #2c3e50;
+      margin: 0;
+      font-size: 1.9rem; /* antes 2.5rem, título más compacto */
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .dashboard-header-main p {
+      color: #7f8c8d;
+      margin: 6px 0 0 0;
+      font-size: 1rem;
+    }
+
+    .nav-back {
+      position: absolute;
+      top: 16px;   /* sube el botón un poco más arriba */
+      left: 16px;  /* alinea con el nuevo margen */
+      z-index: 1001; /* garantiza que quede por encima del header */
+      background: rgba(255, 255, 255, 0.9);
+      color: #3498db;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-back:hover {
+      background: rgba(255, 255, 255, 1);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .dashboard-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 10px 20px; /* reducido padding superior */
+      margin-top: 60px; /* espacio para el botón nav-back */
+    }
+
+    /* KPI Cards Grid */
+    .kpi-section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      color: white;
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .kpi-card {
+      background: rgba(255, 255, 255, 0.95);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #3498db, #27ae60, #f39c12, #e74c3c);
+      border-radius: 20px 20px 0 0;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .kpi-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      background: linear-gradient(135deg, #3498db, #27ae60);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .kpi-value {
+      font-size: 2.8rem;
+      font-weight: bold;
+      color: #2c3e50;
+      margin: 10px 0;
+      line-height: 1;
+    }
+
+    .kpi-label {
+      color: #7f8c8d;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 600;
+    }
+
+    .kpi-trend {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .trend-up { color: #27ae60; }
+    .trend-down { color: #e74c3c; }
+
+    /* Statistics Table */
+    .stats-section {
+      margin-bottom: 40px;
+    }
+
+    .stats-table-container {
+      background: rgba(255, 255, 255, 0.95);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .stats-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    .stats-table th,
+    .stats-table td {
+      padding: 15px;
+      text-align: left;
+      border-bottom: 1px solid #ecf0f1;
+    }
+
+    .stats-table th {
+      background: linear-gradient(135deg, #3498db, #27ae60);
+      color: white;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.9rem;
+    }
+
+    .stats-table tr:hover {
+      background: rgba(52, 152, 219, 0.05);
+    }
+
+    .status-badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .status-active { background: #d5f4e6; color: #27ae60; }
+    .status-pending { background: #fef9e7; color: #f39c12; }
+    .status-completed { background: #e8f5e8; color: #27ae60; }
+
+    /* Charts Grid */
+    .charts-section {
+      margin-bottom: 40px;
+    }
+
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr; /* Específicamente 2 columnas */
+      grid-template-rows: 1fr 1fr;    /* Específicamente 2 filas */
+      gap: 25px; /* Gap más compacto */
+      max-width: 1200px; /* Limitar ancho máximo */
+      margin: 0 auto; /* Centrar la cuadrícula */
+    }
+
+    .chart-container {
+      background: rgba(255, 255, 255, 0.95);
+      -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 25px; /* Padding reducido para mejor proporción */
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+      min-height: 350px; /* Altura mínima uniforme */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chart-container:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+    }
+
+    .chart-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #2c3e50;
+      margin-bottom: 20px;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .chart-canvas {
+      position: relative;
+      height: 280px; /* Altura fija optimizada para 2x2 */
+      flex: 1; /* Ocupa el espacio restante */
+    }
+
+    /* Nueva barra del header en el dashboard */
+    .dashboard-header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px; /* ligeramente más compacto */
+    }
+
+    /* Título con color e icono */
+    .dashboard-title {
+      margin: 0;
+      font-size: 1.8rem; /* antes 2.2rem */
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: linear-gradient(135deg, #3b82f6 0%, #22c55e 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .dashboard-title i {
+      color: #3b82f6; /* fallback para navegadores sin clip */
+    }
+
+    /* Botón de exportar dentro del header (visible) */
+    .export-btn.header-export {
+      position: relative;
+      bottom: auto;
+      right: auto;
+      z-index: 5;
+      padding: 10px 16px; /* un poco más compacto */
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2563eb, #16a34a);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.2);
+    }
+
+    .export-btn.header-export i {
+      font-size: 0.95rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .kpi-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .charts-grid {
+        grid-template-columns: 1fr; /* Una sola columna en móviles */
+        grid-template-rows: auto; /* Filas automáticas */
+        gap: 20px;
+      }
+      
+      .dashboard-header-main h1 {
+        font-size: 1.6rem; /* más pequeño en móvil */
+      }
+
+      .nav-back {
+        position: relative;
+        top: auto;
+        left: auto;
+        margin-bottom: 16px;
+        display: inline-block;
+        z-index: 1001; /* asegurar visibilidad también en móvil */
+      }
+
+      .chart-container {
+        min-height: 300px; /* Altura reducida en móviles */
+      }
+
+      .stats-table-container {
+        overflow-x: auto;
+      }
+    }
+
+    /* Para tablets y pantallas medianas */
+    @media (max-width: 1200px) and (min-width: 769px) {
+      .charts-grid {
+        gap: 20px; /* Gap más pequeño en tablets */
+      }
+      
+      .chart-container {
+        padding: 20px; /* Padding reducido en tablets */
+        min-height: 320px;
+      }
+    }
+  </style>
+</head>
+<body class="dashboard-body">
+  <a href="index.html" class="nav-back">← Volver al Hotel</a>
+  
+  <div class="dashboard-container">
+    <!-- Header Principal -->
+    <div class="dashboard-header-main">
+      <div class="dashboard-header-bar">
+        <h1 class="dashboard-title"><i class="fa-solid fa-chart-line"></i> Dashboard Ejecutivo</h1>
+        <a href="#" onclick="exportDashboardData()" class="export-btn header-export"><i class="fa-solid fa-download"></i> Exportar</a>
+      </div>
+      <p>Panel de Control - Hotel Costa Bella</p>
+    </div>
+
+    <!-- KPIs Principales -->
+    <div class="kpi-section">
+      <h2 class="section-title">📈 Indicadores Clave de Rendimiento</h2>
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-icon">💰</div>
+          <div class="kpi-value" id="revenue-value">$45,280</div>
+          <div class="kpi-label">Ingresos del Mes</div>
+          <div class="kpi-trend trend-up">↗ +12.5% vs mes anterior</div>
+        </div>
+        
+        <div class="kpi-card">
+          <div class="kpi-icon">🏨</div>
+          <div class="kpi-value" id="bookings-value">156</div>
+          <div class="kpi-label">Total de Reservas</div>
+          <div class="kpi-trend trend-up">↗ +8.2% vs mes anterior</div>
+        </div>
+        
+        <div class="kpi-card">
+          <div class="kpi-icon">📊</div>
+          <div class="kpi-value" id="occupancy-value">78%</div>
+          <div class="kpi-label">Tasa de Ocupación</div>
+          <div class="kpi-trend trend-down">↘ -3.1% vs mes anterior</div>
+        </div>
+        
+        <div class="kpi-card">
+          <div class="kpi-icon">⭐</div>
+          <div class="kpi-value" id="satisfaction-value">4.7</div>
+          <div class="kpi-label">Satisfacción Cliente</div>
+          <div class="kpi-trend trend-up">↗ +0.3 vs mes anterior</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de Estadísticas -->
+    <div class="stats-section">
+      <h2 class="section-title">📋 Estadísticas Detalladas</h2>
+      <div class="stats-table-container">
+        <h3 style="margin-top: 0; color: #2c3e50; text-align: center;">Resumen de Actividad Semanal</h3>
+        <table class="stats-table">
+          <thead>
+            <tr>
+              <th>📅 Período</th>
+              <th>🏨 Habitaciones Ocupadas</th>
+              <th>💰 Ingresos</th>
+              <th>⭐ Puntuación Media</th>
+              <th>📊 Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Semana 1 (Ago 1-7)</td>
+              <td>45/60 habitaciones</td>
+              <td>$12,500</td>
+              <td>4.8</td>
+              <td><span class="status-badge status-completed">Completado</span></td>
+            </tr>
+            <tr>
+              <td>Semana 2 (Ago 8-14)</td>
+              <td>52/60 habitaciones</td>
+              <td>$14,200</td>
+              <td>4.6</td>
+              <td><span class="status-badge status-active">Activo</span></td>
+            </tr>
+            <tr>
+              <td>Semana 3 (Ago 15-21)</td>
+              <td>38/60 habitaciones</td>
+              <td>$10,800</td>
+              <td>4.7</td>
+              <td><span class="status-badge status-pending">Pendiente</span></td>
+            </tr>
+            <tr>
+              <td>Semana 4 (Ago 22-28)</td>
+              <td>41/60 habitaciones</td>
+              <td>$11,600</td>
+              <td>4.9</td>
+              <td><span class="status-badge status-pending">Pendiente</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Gráficas en Cuadrícula -->
+    <div class="charts-section">
+      <h2 class="section-title">📊 Análisis Visual</h2>
+      <div class="charts-grid">
+        <div class="chart-container">
+          <div class="chart-title">💹 Ingresos Mensuales</div>
+          <div class="chart-canvas">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <div class="chart-title">🏨 Tipos de Habitación</div>
+          <div class="chart-canvas">
+            <canvas id="roomTypeChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <div class="chart-title">📊 Ocupación Semanal</div>
+          <div class="chart-canvas">
+            <canvas id="occupancyChart"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <div class="chart-title">🌍 Origen de Huéspedes</div>
+          <div class="chart-canvas">
+            <canvas id="originChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

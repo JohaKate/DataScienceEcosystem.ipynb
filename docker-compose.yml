@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Base de datos MySQL
+  db:
+    image: mysql:8.0
+    container_name: hotel_db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: hotel_reservas
+      MYSQL_USER: hotel_user
+      MYSQL_PASSWORD: hotel_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./backend/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    networks:
+      - hotel_network
+
+  # Backend FastAPI
+  backend:
+    build: .
+    container_name: hotel_backend
+    environment:
+      DATABASE_URL: mysql+mysqlconnector://root:password@db:3306/hotel_reservas
+      WEATHER_API_KEY: ${WEATHER_API_KEY:-demo_key}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - ./pipeline/logs:/app/pipeline/logs
+      - ./pipeline/backups:/app/pipeline/backups
+    networks:
+      - hotel_network
+
+  # Servidor web para frontend
+  frontend:
+    image: nginx:alpine
+    container_name: hotel_frontend
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - hotel_network
+
+  # Prefect Server (para desarrollo)
+  prefect:
+    image: prefecthq/prefect:2.14.16-python3.12
+    container_name: hotel_prefect
+    environment:
+      PREFECT_API_URL: http://localhost:4200/api
+      DATABASE_URL: mysql+mysqlconnector://root:password@db:3306/hotel_reservas
+    ports:
+      - "4200:4200"
+    volumes:
+      - ./pipeline:/app/pipeline
+    depends_on:
+      - db
+    networks:
+      - hotel_network
+    command: prefect server start --host 0.0.0.0
+
+volumes:
+  mysql_data:
+
+networks:
+  hotel_network:
+    driver: bridge

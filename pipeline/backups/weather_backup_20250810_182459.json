@@ -1,0 +1,22 @@
+{
+  "timestamp": "2025-08-10T18:24:59.741920",
+  "weather_data": {
+    "name": "San José",
+    "main": {
+      "temp": 24.5,
+      "humidity": 78,
+      "feels_like": 26.2
+    },
+    "weather": [
+      {
+        "description": "parcialmente nublado",
+        "main": "Clouds"
+      }
+    ],
+    "wind": {
+      "speed": 3.2
+    }
+  },
+  "source": "OpenWeatherMap API",
+  "city": "San José"
+}

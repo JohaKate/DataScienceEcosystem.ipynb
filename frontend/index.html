@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Hotel Costa Bella · Reservas</title>
+
+  <link rel="stylesheet" href="styles.css">
+
+  <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/450e1422-e752-4cd0-8dfa-82bc275cd28a/id-preview-96c0f825--da83cf98-dba8-4185-8b50-5ed65f241027.lovable.app-1751074531290.png" />
+</head>
+<body>
+  <header>
+    <h1>Hotel Costa Bella</h1>
+    <nav>
+      <a href="#inicio">Inicio</a>
+      <a href="#galeria">Galería</a>
+      <a href="#contacto">Contacto</a>
+      <a href="dashboard.html" class="admin-link">📊 Dashboard</a>
+      <a href="admin.html" class="admin-link admin-red">Admin</a>
+    </nav>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="inicio">
+    <div class="hero-content">
+      <h2>Bienvenido a tu paraíso frente al mar</h2>
+      <p>Disfruta de una estancia inolvidable en el Hotel Costa Bella, junto a las mejores playas de Costa Rica.</p>
+      <a href="#contacto" class="btn-cta">Contáctanos</a>
+    </div>
+  </section>
+
+  <!-- ================= MAIN ================= -->
+  <main>
+    <!-- 1) Búsqueda de disponibilidad -->
+    <section id="bookingSection" style="display: none;">
+      <h2>Reserva tu habitación</h2>
+      <form id="searchForm">
+        <div class="form-row">
+          <label>
+            Check-in:
+            <input type="date" name="checkin" required>
+          </label>
+          <label>
+            Check-out:
+            <input type="date" name="checkout" required>
+          </label>
+          <label>
+            Huéspedes:
+            <select name="guests">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+            </select>
+          </label>
+          <button type="submit">Buscar disponibilidad</button>
+        </div>
+      </form>
+      
+      <table id="roomsTable" class="hidden">
+        <thead>
+          <tr>
+            <th>Tipo</th>
+            <th>Capacidad</th>
+            <th>Precio/noche</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Suite Vista al Mar</td>
+            <td>2-4 personas</td>
+            <td>$200/noche</td>
+            <td><button class="select-btn" onclick="selectRoom('Suite Vista al Mar', '$200')">Seleccionar</button></td>
+          </tr>
+          <tr>
+            <td>Habitación Doble Deluxe</td>
+            <td>2 personas</td>
+            <td>$150/noche</td>
+            <td><button class="select-btn" onclick="selectRoom('Habitación Doble Deluxe', '$150')">Seleccionar</button></td>
+          </tr>
+          <tr>
+            <td>Villa Privada</td>
+            <td>4 personas</td>
+            <td>$350/noche</td>
+            <td><button class="select-btn" onclick="selectRoom('Villa Privada', '$350')">Seleccionar</button></td>
+          </tr>
+          <tr>
+            <td>Habitación Estándar</td>
+            <td>1-2 personas</td>
+            <td>$100/noche</td>
+            <td><button class="select-btn" onclick="selectRoom('Habitación Estándar', '$100')">Seleccionar</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 2) Formulario de datos personales -->
+    <section id="personalSection" class="hidden">
+      <h2>Datos personales</h2>
+      <form id="reservationForm" class="client-form">
+        <div class="two-col">
+          <label>
+            Nombre(s):
+            <input type="text" name="firstName" required>
+          </label>
+          <label>
+            Apellido(s):
+            <input type="text" name="lastName" required>
+          </label>
+        </div>
+        
+        <div class="two-col">
+          <label>
+            Email:
+            <input type="email" name="email" required>
+          </label>
+          <label>
+            Teléfono:
+            <input type="tel" name="phone" required>
+          </label>
+        </div>
+
+        <div class="two-col">
+          <label>
+            País:
+            <input type="text" name="country">
+          </label>
+          <label>
+            Ciudad:
+            <input type="text" name="city">
+          </label>
+        </div>
+
+        <h3 class="stay-details-title">Detalles de la estancia</h3>
+        
+        <div class="two-col">
+          <label>
+            Check-in:
+            <input type="date" name="checkin" required>
+          </label>
+          <label>
+            Check-out:
+            <input type="date" name="checkout" required>
+          </label>
+        </div>
+
+        <div class="two-col">
+          <label>
+            Huéspedes:
+            <select name="guests">
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+            </select>
+          </label>
+          <label>
+            Tipo de habitación:
+            <select name="roomType">
+              <option>Suite Vista al Mar</option>
+              <option>Habitación Doble Deluxe</option>
+              <option>Villa Privada</option>
+              <option>Habitación Estándar</option>
+            </select>
+          </label>
+        </div>
+
+        <label>
+          Comentarios:
+          <textarea name="comments" rows="3" placeholder="Especificaciones, alergias…"></textarea>
+        </label>
+
+        <button type="submit" class="btn-cta confirm-btn">Confirmar reserva</button>
+      </form>
+    </section>
+
+    <!-- 4) Galería -->
+    <section id="galeria" class="gallery">
+      <h2>Nuestras Habitaciones</h2>
+      <div class="gallery-grid">
+        <article class="room-card" data-roomid="1">
+          <img src="Imagenes/Suite.jpg" alt="Suite Vista al Mar" />
+          <div class="room-info">
+            <h3>Suite Vista al Mar</h3>
+            <p class="room-capacity">2-4 personas</p>
+            <p>Balcón privado con vista al océano, minibar y jacuzzi.</p>
+            <p class="room-price">$200/noche</p>
+          </div>
+        </article>
+
+        <article class="room-card" data-roomid="2">
+          <img src="Imagenes/Deluxe.jpg" alt="Habitación Deluxe" />
+          <div class="room-info">
+            <h3>Habitación Doble Deluxe</h3>
+            <p class="room-capacity">2 personas</p>
+            <p>Confort y elegancia moderna con todas las comodidades.</p>
+            <p class="room-price">$150/noche</p>
+          </div>
+        </article>
+
+        <article class="room-card" data-roomid="3">
+          <img src="Imagenes/Villa.jpg" alt="Villa Privada" />
+          <div class="room-info">
+            <h3>Villa Privada</h3>
+            <p class="room-capacity">4 personas</p>
+            <p>Piscina privada, jardín y sala de estar exclusiva.</p>
+            <p class="room-price">$350/noche</p>
+          </div>
+        </article>
+
+        <article class="room-card" data-roomid="4">
+          <img src="Imagenes/Estandar.jpg" alt="Habitación Estándar" />
+          <div class="room-info">
+            <h3>Habitación Estándar</h3>
+            <p class="room-capacity">1-2 personas</p>
+            <p>Opción económica y cómoda para estadías cortas.</p>
+            <p class="room-price">$100/noche</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 4) Información del Clima -->
+    <section id="weather" class="weather-section">
+      <h2>🌤️ Clima en Costa Rica</h2>
+      <div class="weather-controls">
+        <label for="provinceSelect">Selecciona una provincia:</label>
+        <select id="provinceSelect" onchange="changeProvince()">
+          <option value="San José">San José (Central)</option>
+          <option value="Alajuela">Alajuela</option>
+          <option value="Cartago">Cartago</option>
+          <option value="Heredia">Heredia</option>
+          <option value="Guanacaste">Guanacaste (Liberia)</option>
+          <option value="Puntarenas">Puntarenas</option>
+          <option value="Limón">Limón (Puerto Limón)</option>
+        </select>
+      </div>
+      <!-- New: current province/city title -->
+      <div id="currentProvinceTitle" class="weather-current">Provincia: San José — Ciudad: San José</div>
+      <div class="weather-grid" id="weatherGrid">
+        <div class="weather-card-item" id="weather1">
+          <div class="weather-loading">🔄 Cargando...</div>
+        </div>
+        <div class="weather-card-item" id="weather2">
+          <div class="weather-loading">🔄 Cargando...</div>
+        </div>
+        <div class="weather-card-item" id="weather3">
+          <div class="weather-loading">🔄 Cargando...</div>
+        </div>
+        <div class="weather-card-item" id="weather4">
+          <div class="weather-loading">🔄 Cargando...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5) Contacto -->
+    <section id="contacto" class="contact-section">
+      <h2>Contáctanos</h2>
+      <div class="contact-wrapper">
+        <address class="contact-info">
+          <p><i class="fa-solid fa-location-dot"></i> Playa Blanca, Costa Rica</p>
+          <p><i class="fa-solid fa-phone"></i> +506 4000-1234</p>
+          <p><i class="fa-solid fa-envelope"></i> reservas@costabella.com</p>
+          <div class="social-links">
+            <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+            <a href="#"><i class="fa-brands fa-instagram"></i></a>
+            <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
+          </div>
+        </address>
+
+        <form id="contactForm" class="contact-card">
+          <label>Nombre:<input type="text" name="full_name" required /></label>
+          <label>Email:<input type="email" name="email" required /></label>
+          <label>Mensaje:<textarea name="message" rows="3" required></textarea></label>
+          <button type="submit" class="btn-cta">Enviar</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer><p>&copy; 2025 Hotel Costa Bella · Todos los derechos reservados</p></footer>
+
+  <!-- JS principal -->
+  <script src="script.js" defer></script>
+  <script src="image-checker.js" defer></script>
+
+</body>
+</html>
